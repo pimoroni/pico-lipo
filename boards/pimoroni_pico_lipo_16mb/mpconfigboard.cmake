@@ -5,3 +5,5 @@ set(PICO_BOARD "pimoroni_picolipo_16mb")
 set(MICROPY_FROZEN_MANIFEST ${MICROPY_BOARD_DIR}/manifest.py)
 
 set(MICROPY_C_HEAP_SIZE 4096)
+
+include(${CMAKE_CURRENT_LIST_DIR}/../common.cmake)
