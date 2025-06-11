@@ -9,11 +9,6 @@
 #include "py/runtime.h"
 #include "shared/timeutils/timeutils.h"
 
-#define GPIO_I2C_POWER 2
-#define GPIO_WAKE 3
-#define GPIO_EXT_CLK 12
-#define GPIO_LED_A 10
-
 enum {
     WAKE_CHANNEL_0 = 0x00,
     WAKE_CHANNEL_1,
@@ -66,32 +61,31 @@ mp_obj_t _sleep_goto_dormant_until_pin(size_t n_args, const mp_obj_t *args) {
 
         for(i = 0; i < tuple->len; i++) {
             pin = mp_hal_get_pin_obj(tuple->items[i]);
-            err = powman_setup_gpio_wakeup(i, pin, edge, high, 1000); // Tufty Button A
-            if (err == -1) {mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for GPIO %d"), pin);}
+            err = powman_setup_gpio_wakeup(i, pin, edge, high, 1000);
+            if (err == -1) {mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for GPIO %lu"), pin);}
         }
 
     } else {
         uint pin = mp_hal_get_pin_obj(args[ARG_pin]);
-        (void)pin;
+        int err = powman_setup_gpio_wakeup(pin, pin, edge, high, 1000);
+        if (err == -1) {mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for GPIO %lu"), pin);}
     }
 
     powman_init();
 
     if(mp_obj_is_type(args[ARG_pin], &mp_type_tuple)) {
         mp_obj_tuple_t *tuple = MP_OBJ_TO_PTR(args[ARG_pin]);
-        int err = 0;
         size_t i = 0;
         uint pin = 0;
 
         for(i = 0; i < tuple->len; i++) {
             pin = mp_hal_get_pin_obj(tuple->items[i]);
-            err = powman_setup_gpio_wakeup(i, pin, edge, high, 1000); // Tufty Button A
-            if (err == -1) {mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for GPIO %d"), pin);}
+            (void)powman_setup_gpio_wakeup(i, pin, edge, high, 1000);
         }
 
     } else {
         uint pin = mp_hal_get_pin_obj(args[ARG_pin]);
-        powman_setup_gpio_wakeup(POWMAN_WAKE_PWRUP0_CH, pin, edge, high, 1000);
+        (void)powman_setup_gpio_wakeup(POWMAN_WAKE_PWRUP0_CH, pin, edge, high, 1000);
     }
 
     // power off
