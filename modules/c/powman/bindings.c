@@ -15,9 +15,9 @@
 #define GPIO_LED_A 10
 
 enum {
-    WAKE_BUTTON_A = 0x00,
-    WAKE_BUTTON_B,
-    WAKE_BUTTON_C,
+    WAKE_CHANNEL_0 = 0x00,
+    WAKE_CHANNEL_1,
+    WAKE_CHANNEL_2,
     WAKE_TIMER = 0xf0,
     WAKE_UNKNOWN = 0xff,
 };
@@ -27,9 +27,9 @@ mp_obj_t _sleep_get_wake_reason(void) {
     if(wake_reason & POWMAN_WAKE_ALARM) {
         return MP_ROM_INT(WAKE_TIMER);
     }
-    if(wake_reason & POWMAN_WAKE_PWRUP0) return MP_ROM_INT(WAKE_BUTTON_A);
-    if(wake_reason & POWMAN_WAKE_PWRUP1) return MP_ROM_INT(WAKE_BUTTON_B);
-    if(wake_reason & POWMAN_WAKE_PWRUP2) return MP_ROM_INT(WAKE_BUTTON_C);
+    if(wake_reason & POWMAN_WAKE_PWRUP0) return MP_ROM_INT(WAKE_CHANNEL_0);
+    if(wake_reason & POWMAN_WAKE_PWRUP1) return MP_ROM_INT(WAKE_CHANNEL_1);
+    if(wake_reason & POWMAN_WAKE_PWRUP2) return MP_ROM_INT(WAKE_CHANNEL_2);
     return MP_ROM_INT(WAKE_UNKNOWN);
 }
 static MP_DEFINE_CONST_FUN_OBJ_0(_sleep_get_wake_reason_obj, _sleep_get_wake_reason);
@@ -44,10 +44,6 @@ static MP_DEFINE_CONST_FUN_OBJ_0(_sleep_get_wake_reason_obj, _sleep_get_wake_rea
 mp_obj_t _sleep_goto_dormant_until_pin(size_t n_args, const mp_obj_t *args) {
     enum { ARG_pin, ARG_edge, ARG_high, ARG_timeout };
 
-    uint pin = UINT16_MAX;
-    if(args[ARG_pin] != mp_const_none) {
-        pin = mp_hal_get_pin_obj(args[ARG_pin]);
-    }
     bool edge = mp_obj_is_true(args[ARG_edge]);
     bool high = mp_obj_is_true(args[ARG_high]);
     uint64_t timeout_ms = 0;
@@ -56,18 +52,46 @@ mp_obj_t _sleep_goto_dormant_until_pin(size_t n_args, const mp_obj_t *args) {
         timeout_ms = (uint64_t)mp_obj_get_float(args[ARG_timeout]) * 1000;
     }
 
+    // Pre parse params to raise errors which we can't do after powman_init
+
+    if(mp_obj_is_type(args[ARG_pin], &mp_type_tuple)) {
+        mp_obj_tuple_t *tuple = MP_OBJ_TO_PTR(args[ARG_pin]);
+        int err = 0;
+        size_t i = 0;
+        uint pin = 0;
+
+        if(tuple->len > 3) {
+            mp_raise_msg(&mp_type_ValueError, MP_ERROR_TEXT("Too many wakeup pins (maximum 3)"));
+        }
+
+        for(i = 0; i < tuple->len; i++) {
+            pin = mp_hal_get_pin_obj(tuple->items[i]);
+            err = powman_setup_gpio_wakeup(i, pin, edge, high, 1000); // Tufty Button A
+            if (err == -1) {mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for GPIO %d"), pin);}
+        }
+
+    } else {
+        uint pin = mp_hal_get_pin_obj(args[ARG_pin]);
+        (void)pin;
+    }
+
     powman_init();
 
-    if (pin != UINT16_MAX) {
-        powman_setup_gpio_wakeup(POWMAN_WAKE_PWRUP0_CH, pin, edge, high, 1000);
-    } else {
+    if(mp_obj_is_type(args[ARG_pin], &mp_type_tuple)) {
+        mp_obj_tuple_t *tuple = MP_OBJ_TO_PTR(args[ARG_pin]);
         int err = 0;
-        err = powman_setup_gpio_wakeup(POWMAN_WAKE_PWRUP0_CH, 12, edge, high, 1000); // Tufty Button A
-        if (err == -1) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for Button A"));}
-        err = powman_setup_gpio_wakeup(POWMAN_WAKE_PWRUP1_CH, 13, edge, high, 1000); // Tufty Button B
-        if (err == -1) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for Button B"));}
-        err = powman_setup_gpio_wakeup(POWMAN_WAKE_PWRUP2_CH, 14, edge, high, 1000); // Tufty Button C
-        if (err == -1) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for Button C"));}
+        size_t i = 0;
+        uint pin = 0;
+
+        for(i = 0; i < tuple->len; i++) {
+            pin = mp_hal_get_pin_obj(tuple->items[i]);
+            err = powman_setup_gpio_wakeup(i, pin, edge, high, 1000); // Tufty Button A
+            if (err == -1) {mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("Timeout waiting for GPIO %d"), pin);}
+        }
+
+    } else {
+        uint pin = mp_hal_get_pin_obj(args[ARG_pin]);
+        powman_setup_gpio_wakeup(POWMAN_WAKE_PWRUP0_CH, pin, edge, high, 1000);
     }
 
     // power off
@@ -134,9 +158,9 @@ static const mp_map_elem_t sleep_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_goto_dormant_for), MP_ROM_PTR(&_sleep_goto_dormant_for_obj) },
     { MP_ROM_QSTR(MP_QSTR_get_wake_reason), MP_ROM_PTR(&_sleep_get_wake_reason_obj) },
 
-    { MP_ROM_QSTR(MP_QSTR_WAKE_BUTTON_A), MP_ROM_INT(WAKE_BUTTON_A) },
-    { MP_ROM_QSTR(MP_QSTR_WAKE_BUTTON_B), MP_ROM_INT(WAKE_BUTTON_B) },
-    { MP_ROM_QSTR(MP_QSTR_WAKE_BUTTON_C), MP_ROM_INT(WAKE_BUTTON_C) },
+    { MP_ROM_QSTR(MP_QSTR_WAKE_CHANNEL_0), MP_ROM_INT(WAKE_CHANNEL_0) },
+    { MP_ROM_QSTR(MP_QSTR_WAKE_CHANNEL_1), MP_ROM_INT(WAKE_CHANNEL_1) },
+    { MP_ROM_QSTR(MP_QSTR_WAKE_CHANNEL_2), MP_ROM_INT(WAKE_CHANNEL_2) },
     { MP_ROM_QSTR(MP_QSTR_WAKE_TIMER),    MP_ROM_INT(WAKE_TIMER)    }, // TODO: Rename to ALARM?
     { MP_ROM_QSTR(MP_QSTR_WAKE_UNKNOWN),  MP_ROM_INT(WAKE_UNKNOWN)  },
 };
