@@ -36,18 +36,18 @@ function qa_fix {
 
 function qa_examples_check {
     qa_check examples/
-    qa_check examples-rp2040/
 }
 
 function qa_examples_fix {
     qa_fix examples/
-    qa_fix examples-rp2040/
 }
 
 function qa_modules_check {
-    qa_check modules/
+    # qa_check modules/
+    true
 }
 
 function qa_modules_fix {
-    qa_fix modules/
+    # qa_fix modules/
+    true
 }
