@@ -13,8 +13,8 @@ Pico LiPo 2 and Pico LiPo 2XL W.
 ## Get Pico Lipo
 
 * Pico LiPo (4MB, 16MB) - https://shop.pimoroni.com/products/pimoroni-pico-lipo
-* Pico LiPo 2 - 
-* Pico LiPo 2XL W - 
+* Pico LiPo 2 - https://shop.pimoroni.com/products/pimoroni-pico-lipo-2
+* Pico LiPo 2XL W - https://shop.pimoroni.com/products/pimoroni-pico-lipo-2-xl-w
 
 ## Download Firmware
 
