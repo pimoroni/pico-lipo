@@ -33,18 +33,9 @@ padding = max(len(r[0]) for r in results) + 1
 print("\nFound WiFi networks:")
 print(f"{'SSID':{padding}s} {'BSSID':17s}  CH dB Auth")
 for (ssid, bssid, channel, rssi, auth_mode, _) in results:
-    auth_modes = []
-    if auth_mode == 0:
-        auth_modes += ["open"]
-    else:
-        # Auth mode is a bitfield,
-        # see https://github.com/georgerobotics/cyw43-driver/blob/v1.1.0/src/cyw43_ll.c#L573-L584
-        if auth_mode & 1:
-            auth_modes += ["WEP"]
-        if auth_mode & 2:
-            auth_modes += ["WPA"]
-        if auth_mode & 4:
-            auth_modes += ["WPA2"]
+    # Auth mode is a bitfield,
+    # see https://github.com/georgerobotics/cyw43-driver/blob/v1.1.0/src/cyw43_ll.c#L573-L584
+    auth_modes = [mode for b, mode in ((1, "WEP"), (2, "WPA"), (4, "WPA2")) if auth_mode & b] or ["open"]
 
     bssid = binascii.hexlify(bssid, ":").decode()
 
