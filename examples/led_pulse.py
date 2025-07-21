@@ -1,14 +1,11 @@
-from machine import Pin, PWM
+from machine import PWM
 import time
 import math
 
-PULSE_PERIOD = 5 # Seconds
+PULSE_PERIOD = 5   # Seconds
 
-# Set up the LED as an output
-Pin.board.LED.init(mode=Pin.OUT)
-
-# Set up PWM on our LED pin
-led = PWM(Pin.board.LED)
+# Set up PWM on our LED pin. We're using Pin 22 in this example.
+led = PWM(22)
 
 # 1000Hz frequency
 led.freq(1000)
