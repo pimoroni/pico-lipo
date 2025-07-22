@@ -43,11 +43,6 @@ function ci_micropython_clone {
     git submodule update --init lib/micropython-lib
     git submodule update --init lib/tinyusb
     git submodule update --init lib/btstack
-
-    # HACK: Fix SDK 2.1.1 being pinned at the "develop" picotool branch :|
-    cd "$CI_BUILD_ROOT/micropython/lib/pico-sdk" || return 1
-    git apply "$CI_PROJECT_ROOT/ci/picotool-2.1.1.patch"
-
     cd "$CI_BUILD_ROOT"
 }
 
