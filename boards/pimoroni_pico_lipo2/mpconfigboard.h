@@ -11,8 +11,3 @@
 
 #undef MICROPY_HW_PIN_RESERVED
 #define MICROPY_HW_PIN_RESERVED(i) (false)
-
-// PSRAM Settings
-#define MICROPY_HW_ENABLE_PSRAM                 (1)
-#define MICROPY_HW_PSRAM_CS_PIN                 PIMORONI_PICO_LIPO2_PSRAM_CS_PIN
-#define MICROPY_GC_SPLIT_HEAP                   (1)
