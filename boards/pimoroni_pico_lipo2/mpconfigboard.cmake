@@ -25,6 +25,15 @@ include(enable_cyw43.cmake)
 # Board specific version of the frozen manifest
 set(MICROPY_FROZEN_MANIFEST ${MICROPY_BOARD_DIR}/manifest.py)
 
+# The flash split, firmware then the filesystem, set here so the linker sees it too.
+# FLASH_SIZE_BYTES must agree with PICO_FLASH_SIZE_BYTES in pimoroni_pico_lipo2.h.
+math(EXPR FLASH_SIZE_BYTES "16 * 1024 * 1024")
+math(EXPR FIRMWARE_SIZE_BYTES "2 * 1024 * 1024")
+
+if(NOT DEFINED MICROPY_HW_FLASH_STORAGE_BYTES)
+    math(EXPR MICROPY_HW_FLASH_STORAGE_BYTES "${FLASH_SIZE_BYTES} - ${FIRMWARE_SIZE_BYTES}")
+endif()
+
 set(PIMORONI_UF2_MANIFEST ${CMAKE_CURRENT_LIST_DIR}/manifest.txt)
 set(PIMORONI_UF2_DIR ${CMAKE_CURRENT_LIST_DIR}/../../examples)
 include(${CMAKE_CURRENT_LIST_DIR}/../common.cmake)
