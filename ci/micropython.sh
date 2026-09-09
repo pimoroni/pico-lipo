@@ -4,7 +4,12 @@ MICROPYTHON_FLAVOUR="pimoroni"
 MICROPYTHON_VERSION="cyw43-dynamic-pins"
 
 PIMORONI_PICO_FLAVOUR="pimoroni"
-PIMORONI_PICO_VERSION="55c122a90b70ad5a10956f541f4213d98a241e33"
+PIMORONI_PICO_VERSION="60621130f201b025d280786d6b5078597b29daa3"
+
+# PicoVector v3, which pimoroni-pico's common module set builds on RP2350 in place of the
+# in-tree module, and the SP/CE screen driver and library on the connector
+PIMORONI_PICOVECTOR_VERSION="0eac9059cd42f9942009e6761caff612ea8b81b0"
+PIMORONI_SPIDISPLAY_VERSION="275d09570605f2b9acddbe88a667328da3c527e2"
 
 PY_DECL_VERSION="v0.0.3"
 DIR2UF2_VERSION="v0.0.9"
@@ -46,6 +51,19 @@ function ci_micropython_clone {
     cd "$CI_BUILD_ROOT"
 }
 
+function ci_pimoroni_picovector_clone {
+    log_inform "Using Pimoroni PicoVector pimoroni/$PIMORONI_PICOVECTOR_VERSION"
+    git clone https://github.com/pimoroni/picovector-micropython "$CI_BUILD_ROOT/picovector-micropython"
+    git -C "$CI_BUILD_ROOT/picovector-micropython" checkout $PIMORONI_PICOVECTOR_VERSION
+    git -C "$CI_BUILD_ROOT/picovector-micropython" submodule update --init
+}
+
+function ci_pimoroni_spidisplay_clone {
+    log_inform "Using Pimoroni spidisplay pimoroni/$PIMORONI_SPIDISPLAY_VERSION"
+    git clone https://github.com/pimoroni/spidisplay "$CI_BUILD_ROOT/spidisplay"
+    git -C "$CI_BUILD_ROOT/spidisplay" checkout $PIMORONI_SPIDISPLAY_VERSION
+}
+
 function ci_tools_clone {
     mkdir -p "$CI_BUILD_ROOT/tools"
     git clone https://github.com/gadgetoid/py_decl -b "$PY_DECL_VERSION" "$CI_BUILD_ROOT/tools/py_decl"
@@ -69,6 +87,8 @@ function ci_prepare_all {
     ci_tools_clone
     ci_micropython_clone
     ci_pimoroni_pico_clone
+    ci_pimoroni_picovector_clone
+    ci_pimoroni_spidisplay_clone
     ci_micropython_build_mpy_cross
 }
 
@@ -98,6 +118,8 @@ function ci_cmake_configure {
     -DPICO_NO_COPRO_DIS=1 \
     -DPICOTOOL_FETCH_FROM_GIT_PATH="$TOOLS_DIR/picotool" \
     -DPIMORONI_PICO_PATH="$CI_BUILD_ROOT/pimoroni-pico" \
+    -DPICOVECTOR_MICROPYTHON_DIR="$CI_BUILD_ROOT/picovector-micropython" \
+    -DSPIDISPLAY_DIR="$CI_BUILD_ROOT/spidisplay" \
     -DPIMORONI_TOOLS_DIR="$TOOLS_DIR" \
     -DUSER_C_MODULES="$MICROPY_BOARD_DIR/usermodules.cmake" \
     -DMICROPY_BOARD_DIR="$MICROPY_BOARD_DIR" \

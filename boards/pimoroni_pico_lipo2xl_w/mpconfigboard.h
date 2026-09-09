@@ -8,3 +8,12 @@
 #define MICROPY_PY_NETWORK_PPP_LWIP             (1)
 
 #include "enable_cyw43.h"
+
+// The GC heap lives entirely in PSRAM, leaving the linker's SRAM heap region free for
+// the spidisplay module's display workspaces and canvases.
+#define MICROPY_GC_SPLIT_HEAP                   (0)
+
+// core1 is picovector's worker, which the spidisplay module's frame conversion shares.
+// With threads on, every soft reset resets core1 under a worker that believes it is
+// still running, and the next job waits for it forever.
+#define MICROPY_PY_THREAD                       (0)

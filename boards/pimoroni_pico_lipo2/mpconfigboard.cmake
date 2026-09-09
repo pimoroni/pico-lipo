@@ -11,6 +11,11 @@ set(PICO_NUM_GPIOS 48)
 set(MICROPY_HW_ENABLE_PSRAM 1)
 set(MICROPY_HW_PSRAM_CS_PIN 47)
 
+# A C heap for libstdc++'s exception pool, taken at static initialisation. One page is
+# enough under newlib-nano, which usermod-common's -specs=nano.specs selects. The full
+# newlib pads the break to a page and needs 8192.
+set(MICROPY_C_HEAP_SIZE 4096)
+
 # Links micropy_lib_lwip and sets MICROPY_PY_LWIP = 1
 # Picked up and expanded upon in mpconfigboard.h
 set(MICROPY_PY_LWIP ON)

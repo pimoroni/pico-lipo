@@ -8,3 +8,7 @@ include(modules/c/wakeup/micropython)
 include(modules/c/powman/micropython)
 
 include(usermod-common)
+
+# SP/CE screens on the connector. The GC heap lives in PSRAM here, so the displays'
+# region is the SRAM it leaves free.
+find_package(SPIDISPLAY CONFIG REQUIRED)
