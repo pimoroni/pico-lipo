@@ -9,4 +9,6 @@ freeze(MODULES_PY, "gfx_pack.py")
 freeze(MODULES_PY, "pimoroni.py")
 freeze(MODULES_PY, "boot.py")
 
+freeze("$(BOARD_DIR)", "version.py")
+
 freeze(MODULES_PY, "lte.py")
