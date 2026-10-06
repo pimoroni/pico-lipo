@@ -9,10 +9,11 @@ jobs:
     name: Python Linting
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Source
+      uses: actions/checkout@v7
 
     - name: Install Python
-      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55
+      uses: actions/setup-python@v7
       with:
         python-version: '3.13'
 
