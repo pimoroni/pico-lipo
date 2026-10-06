@@ -12,14 +12,14 @@ SDK
 
 ## Install Dependencies
 
-You'll need Pico SDK, Pimoroni Pico (C++ drivers for our modules), Pico
-Boilerplate (a boilerplate project for Pico) Pico LiPo (board definitions.)
+You'll need Pico SDK (2.3.1 or later, for the Pico LiPo 2 board definitions),
+Pimoroni Pico (C++ drivers for our modules) and Pico Boilerplate (a boilerplate
+project for Pico).
 
 To fetch these, create a new project directory and:
 
 ```
 git clone https://github.com/raspberrypi/pico-sdk
-git clone https://github.com/pimoroni/pico-lipo
 git clone https://github.com/pimoroni/pimoroni-pico
 git clone https://github.com/pimoroni/pico-boilerplate
 ```
@@ -41,13 +41,16 @@ are installed and that we can build it:
 cd pico-boilerplate
 mkdir build
 cd build
-cmake .. -DPICO_BOARD=pimoroni_pico_lipo2xl_w -DPICO_BOARD_HEADER_DIRS=../../pico-lipo/boards/pimoroni_pico_lipo2xl_w -DPICO_SDK_PATH=../../pico-sdk
+cmake .. -DPICO_BOARD=pimoroni_pico_lipo2xl_w -DPICO_SDK_PATH=../../pico-sdk
 make -j
 ```
 
-Change the `DPICO_BOARD_HEADER_DIRS` and `PICO_BOARD` values to match the board
-you want to develop for! You'll find these in the `boards/` directory of the
-Pico LiPo repository.
+Change `PICO_BOARD` to match the board you want to develop for:
+
+* Pico LiPo 4MB - `pimoroni_picolipo_4mb`
+* Pico LiPo 16MB - `pimoroni_picolipo_16mb`
+* Pico LiPo 2 - `pimoroni_pico_lipo2`
+* Pico LiPo 2 XL W - `pimoroni_pico_lipo2xl_w`
 
 ## Make Sure Code Runs
 

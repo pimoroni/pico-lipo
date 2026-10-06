@@ -2,10 +2,10 @@
 set(PICO_BOARD "pimoroni_pico_lipo2")
 set(PICO_PLATFORM "rp2350")
 
-set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
-
 # To change the gpio count for QFN-80
 set(PICO_NUM_GPIOS 48)
+
+set(PICO_CYW43_SUPPORTED 1)
 
 set(MICROPY_HW_ENABLE_PSRAM 1)
 set(MICROPY_HW_PSRAM_CS_PIN 47)
