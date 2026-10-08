@@ -12,4 +12,6 @@ freeze(MODULES_PY, "boot.py")
 
 freeze(MODULES_PY, "lte.py")
 
+freeze(MODULES_PY, "spce.py")
+
 freeze(MODULES_LOCAL, "ezwifi.py")
